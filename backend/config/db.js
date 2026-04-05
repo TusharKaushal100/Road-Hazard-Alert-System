@@ -4,9 +4,7 @@ const { Schema, model } = mongoose;
 const ObjectId = mongoose.Types.ObjectId;
 
 
-// =============================
-// 👤 USER SCHEMA
-// =============================
+
 
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
@@ -14,9 +12,6 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 
-// =============================
-// 🚨 POST (HAZARD) SCHEMA
-// =============================
 
 const postSchema = new Schema({
 
@@ -36,7 +31,7 @@ const postSchema = new Schema({
     required: true
   },
 
-  // 🔥 GEOJSON (IMPORTANT FOR MAP)
+ 
   location: {
     type: {
       type: String,
@@ -44,7 +39,7 @@ const postSchema = new Schema({
       required: true
     },
     coordinates: {
-      type: [Number], // [lng, lat]
+      type: [Number], 
       required: true
     }
   },
@@ -63,7 +58,7 @@ const postSchema = new Schema({
 
   source: {
     type: String,
-    enum: ["user", "twitter"],
+    enum: ["user", "twitter", "reddit"],
     default: "user"
   },
 
@@ -75,13 +70,11 @@ const postSchema = new Schema({
 }, { timestamps: true });
 
 
-// 🔥 VERY IMPORTANT (for map queries later)
+
 postSchema.index({ location: "2dsphere" });
 
 
-// =============================
-// 🏢 AUTHORITY SCHEMA
-// =============================
+
 
 const authoritySchema = new Schema({
 
@@ -108,9 +101,7 @@ const authoritySchema = new Schema({
 }, { timestamps: true });
 
 
-// =============================
-// 🐦 TWEET LOG (OPTIONAL)
-// =============================
+
 
 const tweetSchema = new Schema({
 
@@ -131,9 +122,6 @@ const tweetSchema = new Schema({
 }, { timestamps: true });
 
 
-// =============================
-// 📦 EXPORT MODELS
-// =============================
 
 export const UserModel = model("users", userSchema);
 
