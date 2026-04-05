@@ -1,0 +1,14 @@
+
+node_modules/
+.env
+
+dist/
+build/
+.cache/
+
+uploads/
+images/
+
+*.db
+
+coverage/
