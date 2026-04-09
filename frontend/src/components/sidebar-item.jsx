@@ -1,27 +1,20 @@
-import type { ReactElement } from "react"
+export const SidebarItem = (props) => {
+  return (
+    <div
+      onClick={props.onClick}
+      className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-200 transition cursor-pointer"
+    >
+      {/* Icon */}
+      <div>
+        {props.icon}
+      </div>
 
-interface Side{
-    icon:ReactElement,
-    text:string,
-    open:boolean,
-    onClick?:()=>void,
-    special?:boolean
-    
-
-}
-
-export const SidebarItem = (prop:Side)=>{
-        
-    return <div onClick = { prop.onClick} className = "flex items-center rounded-md hover:bg-gray-300 transition-all duration-300">
-             <div className = "p-2">
-                   {prop.icon}
-             </div>
-             <div className="p-1 text-md">
-                 
-                     {prop.open && prop.text}
-                  
-            
-                  
-             </div>
+      {/* Text */}
+      {props.open && (
+        <div className="text-sm font-medium">
+          {props.text}
+        </div>
+      )}
     </div>
+  )
 }

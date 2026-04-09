@@ -1,24 +1,23 @@
 import { iconSizeClass, defaultStyle } from "./iconProps"
 
-export const Bars = (props) => {
+export const Cross = (props) => {
 
   const size = props.size || "md"
 
   return (
-    <div onClick={props.onClick} className="cursor-pointer">
+    <div onClick={props.onClick}>
 
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
         className={`${iconSizeClass[size]} ${defaultStyle}`}
+        stroke="currentColor"
+        strokeWidth="1.5"
+        viewBox="0 0 24 24"
+        fill="none"
       >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          d="M6 18 18 6M6 6l12 12"
         />
       </svg>
 

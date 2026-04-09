@@ -1,66 +1,89 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import axios from "axios"
 import { Input } from "./input"
 import { Button } from "./button"
-import { Plus } from "../icons/plus"
 import { Cross } from "../icons/cross"
-import axios from "axios"
-import { URL } from "../assets/config"
+import { Plus } from "../icons/plus"
 
-interface ModalData{
-     onClick?:()=>void,
-     title:string,
-     description:string,
-     tags?:string[],
-     pressed:boolean,
-     setPressed:any
-}
+export const Modal = (props) => {
 
-export const Modal = (props:ModalData)=>{
-         
-     const titleRef = useRef<HTMLInputElement>(null)
-     const descriptionRef = useRef<HTMLInputElement>(null)
+  const textRef = useRef(null)
+  const [loading, setLoading] = useState(false)
 
-     const handleModal = async ()=>{
+  const handleSubmit = async () => {
+    const text = textRef.current.value
 
-          const token = localStorage.getItem("token")
-          console.log(`token=${token}`)
-               
-          const title = titleRef.current?.value
-          const description = descriptionRef.current?.value
-       
-          try{
-              const response =  await axios.post(`${URL}/api/v1/question/ask`,{title,description},{headers:{authorization:`${token}`}})
+    if (!text || text.trim() === "") {
+      alert("Please enter a description")
+      return
+    }
 
-              console.log(`response = ${response.data.message}`)
-              
-           }
-           catch(err:any){
-               console.log(`error caught:${err}`)
-           }
-          
-     }
+    try {
+      setLoading(true)
 
-              return props.pressed ? <div className=" fixed flex items-center justify-center h-screen w-screen inset-0"> {/*so yeah if we dont used fixed then the profile div would come below this modal div so fixed is use to fix or glue it to the screen like a shield that stays in place so it appears on top of profile*/}
-                       <div className=" fixed h-screen w-screen bg-white opacity-50 z-40" onClick = {props.onClick}>
-                      {/* inset-0 shorthand for left-0 r-0 t-0 b-0*/}
-                       </div>
-                        <div className="hover:w-76 hover:h-76 duration-300 transition-all w-72 h-72  bg-white border-slate-300 z-50 shadow-lg rounded-md"> 
-                             <div className="flex justify-end p-5">
-                                  <Cross size={"md"} onClick={props.onClick}></Cross>
-                             </div>
-                             <div className = " flex items-center justify-center">
-                                    <div>
-                                    <Input ref = {titleRef} placeholder={"enter title"} ></Input> 
-                                    <Input ref = {descriptionRef} placeholder={"enter description"} ></Input>
-                                    <div className={"mt-6"}>
-                                          <Button variant ={"primary"} text={"Submit"} size={"md"} className = {"w-full"} onClick={()=>{handleModal(); props.onClick?.();}}></Button> 
-                                    </div>
-                                    
-                                    </div>
-                              </div> 
-                             
-                               
-                        </div>
-                     
-                  </div>:null
+      const response = await axios.post(
+        "http://localhost:4000/api/v1/posts",
+        { text }
+      )
+
+      console.log("Post created:", response.data)
+
+      textRef.current.value = ""
+
+      props.onClose()
+
+    } catch (err) {
+      console.log("Error:", err)
+      alert("Failed to create post")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!props.open) return null
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black opacity-40"
+        onClick={props.onClose}
+      ></div>
+
+      {/* Modal */}
+      <div className="relative bg-white w-96 p-6 rounded-lg shadow-lg">
+
+        {/* Close */}
+        <div className="flex justify-end">
+          <Cross size="md" onClick={props.onClose} />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-lg font-semibold mb-4 text-center">
+          Report Hazard
+        </h2>
+
+        {/* Input */}
+        <Input
+          ref={textRef}
+          placeholder="Describe the hazard (e.g. flood near Mumbai)"
+        />
+
+        {/* Button */}
+        <div className="mt-5">
+          <Button
+            variant="primary"
+            size="md"
+            text={loading ? "Submitting..." : "Submit"}
+            startIcon={<Plus size="sm" />}
+            className="w-full"
+            onClick={!loading ? handleSubmit : null}
+          />
+        </div>
+
+      </div>
+
+    </div>
+  )
 }
