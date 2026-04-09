@@ -4,6 +4,8 @@ import { createPost, getPosts, getPostsByCityState } from "../controllers/postCo
 
 const router = express.Router();
 
+console.log("Post routes loaded");
+
 router.post("/", createPost);
 router.get("/", getPosts);
 router.get("/city", getPostsByCityState);

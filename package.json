@@ -1,4 +1,12 @@
-{
+{"name": "road-hazard-alert-system",
+  "version": "1.0.0",
+  "description": "Road hazard detection from social media using NLP + ML",
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "ml:train": "cd ml && python train.py --train",
+    "ml:serve": "cd ml && python train.py --serve"
+  },
   "dependencies": {
     "dotenv": "^17.4.0"
   }

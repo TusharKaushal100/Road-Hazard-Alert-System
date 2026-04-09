@@ -22,7 +22,7 @@ const postSchema = new Schema({
 
   label: {
     type: String,
-    enum: ["accident", "pothole", "road_damage", "traffic", "animal"],
+    enum: ["accident", "pothole", "road_damage", "traffic","flood","animal","none"],
     required: true
   },
 
@@ -53,19 +53,21 @@ const postSchema = new Schema({
   },
 
   state: {
-    type: String
+    type: String,
+  default: "Assam" 
   },
 
   source: {
     type: String,
-    enum: ["user", "twitter", "reddit"],
-    default: "user"
+    enum: ["user", "mock", "reddit"],
+    default: "mock"
   },
 
   userId: {
     type: ObjectId,
     ref: "users"
-  }
+  },
+  username: { type: String },
 
 }, { timestamps: true });
 
