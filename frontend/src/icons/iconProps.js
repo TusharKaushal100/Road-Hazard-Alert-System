@@ -1,26 +1,7 @@
-import { iconSizeClass, defaultStyle } from "./iconProps"
-
-export const Cross = (props) => {
-
-  const size = props.size || "md"
-
-  return (
-    <div onClick={props.onClick}>
-
-      <svg
-        className={`${iconSizeClass[size]} ${defaultStyle}`}
-        stroke="currentColor"
-        strokeWidth="1.5"
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 18 18 6M6 6l12 12"
-        />
-      </svg>
-
-    </div>
-  )
+export const iconSizeClass = {
+  sm: "w-4 h-4",
+  md: "w-5 h-5",
+  lg: "w-6 h-6",
 }
+
+export const defaultStyle = "text-gray-600"

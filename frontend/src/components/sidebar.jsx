@@ -4,24 +4,29 @@ import { SidebarItem } from "./sidebar-item"
 import { Bars } from "../icons/sidebar"
 import { Plus } from "../icons/plus"
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
+import { Earth } from "../icons/earth"
 
-export const SideBar = (props) => {
-
+export const SideBar = ({ setShowModal }) => {
   const [open, setOpen] = useState(true)
 
   return (
-    <div className={`h-screen bg-white shadow-lg border-r flex flex-col ${open ? "w-72" : "w-14"} transition-all duration-300`}>
+    <div className={`h-screen bg-white shadow-lg  flex flex-col
+      ${open ? "w-64" : "w-14"} transition-all duration-300 flex-shrink-0`}>
 
-      {/* Top Section */}
-      <div className="p-2">
+      {/* Top section */}
+      <div className="p-2 space-y-1">
 
-        {/* Toggle Button */}
+        {/* Toggle */}
         <SidebarItem
           onClick={() => setOpen(!open)}
           icon={<Bars size="md" />}
           text=""
           open={open}
         />
+
+        
+
+        <div className=" pt-1" />
 
         {/* Dashboard */}
         <SidebarItem
@@ -30,40 +35,32 @@ export const SideBar = (props) => {
           open={open}
         />
 
-        {/* Send Post (IMPORTANT FEATURE) */}
+        {/* Report Hazard */}
         <SidebarItem
-          onClick={() => props.setShowModal(true)}
+          onClick={() => setShowModal(true)}
           icon={<Plus size="md" />}
-          text="Send Post"
+          text="Report Hazard"
           open={open}
         />
 
-        {/* Profile */}
         <SidebarItem
-          icon={<ProfileIcon size="md" />}
-          text="Profile"
+          onClick={() => setShowModal(true)}
+          icon={<Earth size="md" />}
+          text="Show Live Hazard"
           open={open}
         />
 
       </div>
 
-      {/* Bottom Animation */}
-      {open ? (
-        <div className="mt-auto flex flex-col items-center pb-10 px-4">
-          <div className="w-40 h-40">
-            <DotLottieReact src="/animations/TrafficLight.lottie" loop autoplay />
-          </div>
-          <p className="text-xs text-gray-400 text-center mt-1">
-            Hazard Monitor
-          </p>
+      {/* Bottom animation */}
+      <div className="mt-auto pb-6 flex flex-col items-center">
+        <div className={open ? "w-32 h-32" : "w-8 h-8"}>
+          <DotLottieReact src="/animations/Roadmap.lottie" loop autoplay />
         </div>
-      ) : (
-        <div className="mt-auto pb-4 flex justify-center">
-          <div className="w-8 h-8">
-            <DotLottieReact src="/animations/TrafficLight.lottie" loop autoplay />
-          </div>
-        </div>
-      )}
+        {open && (
+          <p className="text-xs text-gray-400 text-center mt-1">Hazard Monitor</p>
+        )}
+      </div>
 
     </div>
   )
