@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 
-const ReportHazardModal = ({ isOpen, onClose, onPostCreated }) => {
+// This is no longer a "modal overlay" — it's an inline card shown in the main content area.
+// The map is hidden when this is shown. No black background needed.
+const ReportHazardModal = ({ onClose, onPostCreated }) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +21,6 @@ const ReportHazardModal = ({ isOpen, onClose, onPostCreated }) => {
       alert("✅ Hazard reported successfully!");
       onPostCreated?.(res.data.post);
       setText("");
-      onClose();
     } catch (err) {
       console.error(err);
       alert("❌ Failed to report. Please try again.");
@@ -28,43 +29,50 @@ const ReportHazardModal = ({ isOpen, onClose, onPostCreated }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl w-full max-w-lg mx-4 shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-5 border-b">
-          <h2 className="text-2xl font-semibold">Report Road Hazard</h2>
-          <button onClick={onClose} className="text-4xl text-gray-400 hover:text-gray-600">×</button>
-        </div>
+    // A centered card on a white background — like a tweet compose card
+    <div className="bg-white rounded-3xl w-full max-w-lg shadow-xl border border-gray-100">
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <textarea
-            rows="5"
-            className="w-full border border-gray-300 rounded-2xl p-5 text-lg focus:outline-none focus:border-blue-500 resize-y"
-            placeholder="Describe the hazard here... e.g. Big pothole near GS Road, Guwahati"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-
-          <div className="mt-6 flex gap-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-4 text-gray-700 font-medium border border-gray-300 rounded-2xl hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !text.trim()}
-              className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold rounded-2xl"
-            >
-              {loading ? "Posting..." : "Post Hazard"}
-            </button>
-          </div>
-        </form>
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b">
+        <h2 className="text-xl font-semibold text-gray-800">Report Road Hazard</h2>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 text-3xl leading-none"
+        >
+          ×
+        </button>
       </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-6">
+        <textarea
+          rows="6"
+          autoFocus
+          className="w-full border border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-blue-400 resize-none"
+          placeholder="Describe the hazard... e.g. Big pothole near GS Road, Guwahati"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+
+        <div className="mt-5 flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-3 text-gray-600 font-medium border border-gray-200 rounded-2xl hover:bg-gray-50 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading || !text.trim()}
+            className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-semibold rounded-2xl transition"
+          >
+            {loading ? "Posting..." : "Post Hazard"}
+          </button>
+        </div>
+      </form>
+
     </div>
   );
 };

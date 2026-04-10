@@ -2,7 +2,7 @@ import { iconSizeClass, defaultStyle } from "./iconProps"
 
 export const Plus = (props) => {
 
-  const size = props.size || "md"
+  const size = props.size || "lg"
 
   return (
     <div onClick={props.onClick} className="cursor-pointer">

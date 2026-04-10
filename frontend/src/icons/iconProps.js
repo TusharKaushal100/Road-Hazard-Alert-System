@@ -4,4 +4,4 @@ export const iconSizeClass = {
   lg: "w-6 h-6",
 }
 
-export const defaultStyle = "text-gray-600"
+export const defaultStyle = "text-black"

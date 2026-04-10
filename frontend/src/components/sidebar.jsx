@@ -1,66 +1,82 @@
-import { useState } from "react";
-import { Bars} from "../icons/sidebar"
-import { Plus } from "../icons/plus"    
-import { Earth} from "../icons/earth"  
-import { ProfileIcon} from "../icons/profile-icon"  
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";   
-import { SidebarItem } from "./sidebar-item";
+import { useState } from "react"
+import { Bars } from "../icons/sidebar"
+import { Plus } from "../icons/plus"
+import { Earth } from "../icons/earth"
+import { ProfileIcon } from "../icons/profile-icon"
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"
+import { SidebarItem } from "./sidebar-item"
 
-export const SideBar = ({ setShowReportModal, setShowLivePanel }) => {
-  const [open, setOpen] = useState(true);
+const defaultStyle = "h-screen bg-white shadow-lg flex flex-col"
+
+export const SideBar = ({ currentView, onShowMap, onShowReport, onShowLive }) => {
+
+  const [open, setOpen] = useState(true)
 
   return (
-    <div className={`h-screen bg-white shadow-lg flex flex-col
-      ${open ? "w-64" : "w-14"} transition-all duration-300 flex-shrink-0`}>
+    <div className={`${defaultStyle} ${open ? "w-72" : "w-12"} transition-all duration-300`}>
 
-      {/* Top section */}
-      <div className="p-2 space-y-1">
+      {/* TOP SECTION */}
+      <div>
 
         {/* Toggle */}
-        <SidebarItem
-          onClick={() => setOpen(!open)}
-          icon={<Bars size="md" />}
-          text=""
-          open={open}
-        />
-
-        <div className="pt-1" />
+        <div className="mb-3">
+          <SidebarItem
+            onClick={() => setOpen(!open)}
+            icon={<Bars size={"lg"} />}
+            text={""}
+            open={open}
+          />
+        </div>
 
         {/* Dashboard */}
         <SidebarItem
-          icon={<ProfileIcon size="md" />}
-          text="Dashboard"
+          onClick={onShowMap}
+          icon={<ProfileIcon size={"lg"} />}
+          text={"Dashboard"}
           open={open}
         />
 
         {/* Report Hazard */}
         <SidebarItem
-          onClick={() => setShowReportModal(true)}
-          icon={<Plus size="md" />}
-          text="Report Hazard"
+          onClick={onShowReport}
+          icon={<Plus size={"lg"} />}
+          text={"Report Hazard"}
           open={open}
         />
 
-        {/* Show Live Hazard */}
+        {/* Live Hazards */}
         <SidebarItem
-          onClick={() => setShowLivePanel(true)}
-          icon={<Earth size="md" />}
-          text="Show Live Hazard"
+          onClick={onShowLive}
+          icon={<Earth size={"lg"} />}
+          text={"Live Hazards"}
           open={open}
         />
 
       </div>
 
-      {/* Bottom animation */}
-      <div className="mt-auto pb-6 flex flex-col items-center">
-        <div className={open ? "w-32 h-32" : "w-8 h-8"}>
-          <DotLottieReact src="/animations/Roadmap.lottie" loop autoplay />
+      {/* BOTTOM SECTION */}
+      {open && (
+        <div className="mt-auto flex flex-col items-center pb-16 px-4">
+
+          <div className="w-52 h-52">
+            <DotLottieReact src="/animations/Hazard.lottie" loop autoplay />
+          </div>
+
+          <p className="text-xs text-gray-400 tracking-widest uppercase text-center mt-1">
+            Hazard Monitor
+          </p>
+
         </div>
-        {open && (
-          <p className="text-xs text-gray-400 text-center mt-1">Hazard Monitor</p>
-        )}
-      </div>
+      )}
+
+      {!open && (
+        <div className="mt-auto pb-4 flex justify-center">
+          <div className="w-8 h-8">
+            <DotLottieReact src="/animations/Roadmap.lottie" loop autoplay />
+          </div>
+        </div>
+      )}
 
     </div>
-  );
-};
+  )
+}

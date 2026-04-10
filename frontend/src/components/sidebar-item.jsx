@@ -1,19 +1,26 @@
-export const SidebarItem = (props) => {
+export const SidebarItem = ({ onClick, icon, text, open, active }) => {
   return (
     <div
-      onClick={props.onClick}
-      className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-200 transition cursor-pointer"
+      onClick={onClick}
+      className={`flex items-center cursor-pointer transition-all duration-150
+        px-2 py-1 rounded-md mb-1
+
+        ${active
+          ? "bg-gray-200"
+          : "hover:bg-gray-200"
+        }
+      `}
     >
       {/* Icon */}
-      <div>
-        {props.icon}
+      <div className="p-1 text-black">
+        {icon}
       </div>
 
       {/* Text */}
-      {props.open && (
-        <div className="text-sm font-medium">
-          {props.text}
-        </div>
+      {open && (
+        <span className="ml-2 text-md text-black">
+          {text}
+        </span>
       )}
     </div>
   )
