@@ -1,16 +1,16 @@
-import { useState } from "react"
-import { ProfileIcon } from "../icons/profile-icon"
-import { SidebarItem } from "./sidebar-item"
-import { Bars } from "../icons/sidebar"
-import { Plus } from "../icons/plus"
-import { DotLottieReact } from "@lottiefiles/dotlottie-react"
-import { Earth } from "../icons/earth"
+import { useState } from "react";
+import { Bars} from "../icons/sidebar"
+import { Plus } from "../icons/plus"    
+import { Earth} from "../icons/earth"  
+import { ProfileIcon} from "../icons/profile-icon"  
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";   
+import { SidebarItem } from "./sidebar-item";
 
-export const SideBar = ({ setShowModal }) => {
-  const [open, setOpen] = useState(true)
+export const SideBar = ({ setShowReportModal, setShowLivePanel }) => {
+  const [open, setOpen] = useState(true);
 
   return (
-    <div className={`h-screen bg-white shadow-lg  flex flex-col
+    <div className={`h-screen bg-white shadow-lg flex flex-col
       ${open ? "w-64" : "w-14"} transition-all duration-300 flex-shrink-0`}>
 
       {/* Top section */}
@@ -24,9 +24,7 @@ export const SideBar = ({ setShowModal }) => {
           open={open}
         />
 
-        
-
-        <div className=" pt-1" />
+        <div className="pt-1" />
 
         {/* Dashboard */}
         <SidebarItem
@@ -37,14 +35,15 @@ export const SideBar = ({ setShowModal }) => {
 
         {/* Report Hazard */}
         <SidebarItem
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowReportModal(true)}
           icon={<Plus size="md" />}
           text="Report Hazard"
           open={open}
         />
 
+        {/* Show Live Hazard */}
         <SidebarItem
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowLivePanel(true)}
           icon={<Earth size="md" />}
           text="Show Live Hazard"
           open={open}
@@ -63,5 +62,5 @@ export const SideBar = ({ setShowModal }) => {
       </div>
 
     </div>
-  )
-}
+  );
+};

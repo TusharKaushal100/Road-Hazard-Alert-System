@@ -1,81 +1,93 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
-import { SideBar } from "../components/sidebar"
-import { MapView } from "../components/map-view"
-import { SearchBar } from "../components/search-bar"
-import { Modal } from "../components/modal"
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import { SideBar } from "../components/sidebar";
+import { MapView } from "../components/map-view";
+import { SearchBar } from "../components/search-bar";
+import ReportHazardModal from "../components/ReportHazardModal";   // ← new
+import LiveHazardsPanel from "../components/LiveHazardsPanel";     // ← new
 
 export const Dashboard = () => {
+  const [search, setSearch] = useState("");
+  const [hazards, setHazards] = useState([]);
+  const [selectedHazard, setSelectedHazard] = useState(null);
 
-  const [search, setSearch] = useState("")
-  const [hazards, setHazards] = useState([])
-  const [showModal, setShowModal] = useState(false)
+  // Modal states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showLivePanel, setShowLivePanel] = useState(false);
 
-  // 🔹 Load data from backend
+  // Load initial hazards
   const loadHazards = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/v1/posts")
-
-      console.log("API:", res.data)
-
-      // ✅ fix: always set array
+      const res = await axios.get("http://localhost:4000/api/v1/posts");
       if (Array.isArray(res.data)) {
-        setHazards(res.data)
+        setHazards(res.data);
       } else {
-        setHazards([])
+        setHazards([]);
       }
-
     } catch (err) {
-      console.log("Error:", err)
-      setHazards([])
+      console.log("Error loading hazards:", err);
+      setHazards([]);
     }
-  }
+  };
 
   useEffect(() => {
-    loadHazards()
-  }, [])
+    loadHazards();
+  }, []);
 
-  // 🔹 Filter (simple)
-  const filtered = hazards.filter((h) => {
-    if (!search) return true
+  // When a new post is created from modal, add it to the list immediately
+  const handlePostCreated = (newPost) => {
+    setHazards((prev) => [newPost, ...prev]);
+  };
 
+  // Simple filter
+  const filteredHazards = hazards.filter((h) => {
+    if (!search) return true;
     return (
       h.text?.toLowerCase().includes(search.toLowerCase()) ||
       h.location?.name?.toLowerCase().includes(search.toLowerCase())
-    )
-  })
+    );
+  });
 
   return (
-    <div className="flex">
-
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <SideBar setShowModal={setShowModal} />
+      <SideBar 
+        setShowReportModal={setShowReportModal}
+        setShowLivePanel={setShowLivePanel}
+      />
 
-      {/* Main Area */}
-      <div className="flex-1 h-screen flex flex-col bg-gray-100">
-
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col bg-gray-100">
         {/* Top Bar */}
-        <div className="bg-white px-4 py-3 shadow">
+        <div className="bg-white px-4 py-3 shadow-sm">
           <SearchBar search={search} setSearch={setSearch} />
         </div>
 
-        {/* Map */}
-        <div className="flex-1 p-4">
-          <div className="h-full rounded-lg overflow-hidden">
-
-            <MapView hazards={filtered} />
-
+        {/* Map Area */}
+        <div className="flex-1 p-4 relative">
+          <div className="h-full rounded-xl overflow-hidden shadow">
+            <MapView 
+              hazards={filteredHazards} 
+              selected={selectedHazard}
+              setSelected={setSelectedHazard}
+            />
           </div>
         </div>
-
       </div>
 
-      {/* Modal */}
-      <Modal
-        open={showModal}
-        onClose={() => setShowModal(false)}
+      {/* Report Hazard Modal */}
+      <ReportHazardModal 
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onPostCreated={handlePostCreated}
       />
 
+      {/* Live Hazards Panel */}
+      <LiveHazardsPanel 
+        isOpen={showLivePanel}
+        onClose={() => setShowLivePanel(false)}
+      />
     </div>
-  )
-}
+  );
+};
