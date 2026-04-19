@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { userRouter } from "./routes/userRoute.js";
+
 
 import postRouter from "./routes/posts.js";
 import mapRouter from "./routes/map.js";
@@ -21,6 +23,7 @@ app.get("/", (req, res) => res.send("Road Hazard Backend Running"));
 app.use("/api/v1/posts",  postRouter);
 app.use("/api/v1/map",    mapRouter);
 app.use("/api/v1/stream", streamRouter);
+app.use("/api/v1/user", userRouter);
 
 const main = async () => {
   try {

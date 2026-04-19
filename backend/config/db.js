@@ -3,15 +3,12 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 const ObjectId = mongoose.Types.ObjectId;
 
-
-
-
+// ── User schema — password field ADDED (was missing, causing login to fail)
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  email: { type: String }
+  password: { type: String, required: true },  // ← THIS was missing before
+  email:    { type: String },
 }, { timestamps: true });
-
-
 
 const postSchema = new Schema({
 
@@ -31,7 +28,6 @@ const postSchema = new Schema({
     required: true
   },
 
- 
   location: {
     type: {
       type: String,
@@ -39,22 +35,17 @@ const postSchema = new Schema({
       required: true
     },
     coordinates: {
-      type: [Number], 
+      type: [Number],
       required: true
     }
   },
 
-  locationName: {
-    type: String
-  },
-
-  city: {
-    type: String
-  },
+  locationName: { type: String },
+  city:         { type: String },
 
   state: {
     type: String,
-  default: "Assam" 
+    default: "Assam"
   },
 
   source: {
@@ -63,72 +54,27 @@ const postSchema = new Schema({
     default: "mock"
   },
 
-  userId: {
-    type: ObjectId,
-    ref: "users"
-  },
+  userId:   { type: ObjectId, ref: "users" },
   username: { type: String },
 
 }, { timestamps: true });
 
-
-
 postSchema.index({ location: "2dsphere" });
 
-
-
-
 const authoritySchema = new Schema({
-
-  city: {
-    type: String,
-    required: true
-  },
-
-  state: {
-    type: String,
-    required: true
-  },
-
-  email: {
-    type: String,
-    required: true
-  },
-
-  department: {
-    type: String,
-    default: "road_safety"
-  }
-
+  city:       { type: String, required: true },
+  state:      { type: String, required: true },
+  email:      { type: String, required: true },
+  department: { type: String, default: "road_safety" },
 }, { timestamps: true });
-
-
-
 
 const tweetSchema = new Schema({
-
-  text: {
-    type: String
-  },
-
-  processed: {
-    type: Boolean,
-    default: false
-  },
-
-  hazardDetected: {
-    type: Boolean,
-    default: false
-  }
-
+  text:           { type: String },
+  processed:      { type: Boolean, default: false },
+  hazardDetected: { type: Boolean, default: false },
 }, { timestamps: true });
 
-
-
-export const UserModel = model("users", userSchema);
-
-export const PostModel = model("posts", postSchema);
-
-export const AuthorityModel = model("authorities", authoritySchema);
-
-export const TweetModel = model("tweets", tweetSchema);
+export const UserModel      = model("users",       userSchema);
+export const PostModel      = model("posts",        postSchema);
+export const AuthorityModel = model("authorities",  authoritySchema);
+export const TweetModel     = model("tweets",       tweetSchema);

@@ -39,9 +39,10 @@ try {
 }
 
 const FAKE_USERS = [
-  "assam_roads_watch", "guwahati_local", "northeast_news",
-  "road_warrior_ne",   "barak_updates",  "jorhat_diaries",
-  "silchar_speaks",    "tezpur_today",   "dibrugarh_daily",
+  "assam_roads_watch", "guwahati_local",  "northeast_news",
+  "road_warrior_ne",   "barak_updates",   "jorhat_diaries",
+  "silchar_speaks",    "tezpur_today",    "dibrugarh_daily",
+  "india_roads_alert", "pothole_patrol",  "road_hazard_india",
 ];
 
 function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -54,11 +55,15 @@ export function getInMemoryPosts() { return inMemoryPosts; }
 async function ingestOne() {
   if (!dataset.length) return;
 
-  const row      = randomItem(dataset);
-  const ml       = await classifyPost(row.text);
-  const location = extractLocation(row.text);
+  const row = randomItem(dataset);
+  const ml  = await classifyPost(row.text);
 
   if (ml.label === "none" || ml.label === "unknown") return;
+
+  // ✅ FIX: extractLocation is async — must await it!
+  // Without await, location was always a pending Promise object,
+  // so every post got the hard fallback coords (center of India).
+  const location = await extractLocation(row.text);
 
   const postData = {
     text:         row.text,
@@ -98,11 +103,11 @@ async function ingestOne() {
     // No DB — store in memory (last 100)
     const entry = {
       ...postData,
-      _id:        `mem_${Date.now()}_${Math.random()}`,
-      id:         `mem_${Date.now()}_${Math.random()}`,
-      createdAt:  new Date(),
-      location:   { name: location.name, lat: location.lat, lon: location.lng },
-      color:      LABEL_COLORS[ml.label] || "#6b7280",
+      _id:       `mem_${Date.now()}_${Math.random()}`,
+      id:        `mem_${Date.now()}_${Math.random()}`,
+      createdAt: new Date(),
+      location:  { name: location.name, lat: location.lat, lon: location.lng },
+      color:     LABEL_COLORS[ml.label] || "#6b7280",
     };
     inMemoryPosts.unshift(entry);
     if (inMemoryPosts.length > 100) inMemoryPosts.pop();

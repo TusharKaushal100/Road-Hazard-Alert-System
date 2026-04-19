@@ -1,8 +1,10 @@
+// frontend/src/components/ReportHazardModal.jsx
+// Same as before but now sends the auth token so the backend
+// can attach the logged-in username to the post instead of "anonymous".
+
 import { useState } from "react";
 import axios from "axios";
 
-// This is no longer a "modal overlay" — it's an inline card shown in the main content area.
-// The map is hidden when this is shown. No black background needed.
 const ReportHazardModal = ({ onClose, onPostCreated }) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,38 +15,50 @@ const ReportHazardModal = ({ onClose, onPostCreated }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:4000/api/v1/posts", {
-        text: text.trim(),
-        source: "user",
-      });
+      // Get the token that was saved during login
+      const token = localStorage.getItem("token");
 
-      alert("✅ Hazard reported successfully!");
+      const res = await axios.post(
+        "http://localhost:4000/api/v1/posts",
+        { text: text.trim(), source: "user" },
+        {
+          // Send token in header so backend knows who is posting
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert("Hazard reported successfully!");
       onPostCreated?.(res.data.post);
       setText("");
+      onClose();
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to report. Please try again.");
+      if (err.response?.status === 401) {
+        alert("Please login again to report a hazard.");
+      } else {
+        alert("Failed to report. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    // A centered card on a white background — like a tweet compose card
     <div className="bg-white rounded-3xl w-full max-w-lg shadow-xl border border-gray-100">
 
-      {/* Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b">
-        <h2 className="text-xl font-semibold text-gray-800">Report Road Hazard</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 text-3xl leading-none"
-        >
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800">Report Road Hazard</h2>
+          {/* Show who is posting */}
+          <p className="text-sm text-gray-400 mt-0.5">
+            Posting as @{localStorage.getItem("username") || "anonymous"}
+          </p>
+        </div>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-3xl leading-none">
           ×
         </button>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="p-6">
         <textarea
           rows="6"

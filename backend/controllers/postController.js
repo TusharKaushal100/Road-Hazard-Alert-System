@@ -48,6 +48,7 @@ export const createPost = async (req, res) => {
 
   try {
     const { text, source = "user" } = req.body;
+    const username = req.user.username; 
 
     if (!text) {
       return res.status(400).json({ message: "text is required" });
@@ -79,6 +80,7 @@ export const createPost = async (req, res) => {
       locationName: location.name,
       city: location.city,
       state: location.state,
+      username: username || "anonymous",
     };
 
     // 🔥 Step 4: Save to DB

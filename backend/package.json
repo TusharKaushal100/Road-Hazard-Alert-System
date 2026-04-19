@@ -14,11 +14,13 @@
   "dependencies": {
     "@nlpjs/nlp": "^5.0.0-alpha.5",
     "axios": "^1.15.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "env": "^0.0.2",
     "epxress": "^0.0.1-security",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "nodemailer": "^8.0.4",
     "pg": "^8.20.0"
