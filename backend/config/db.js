@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 const ObjectId = mongoose.Types.ObjectId;
 
-// ── User schema — password field ADDED (was missing, causing login to fail)
+
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },  // ← THIS was missing before
+  password: { type: String, required: true },  
   email:    { type: String },
 }, { timestamps: true });
 

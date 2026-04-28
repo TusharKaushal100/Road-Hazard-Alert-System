@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 import { SideBar } from "../components/sidebar";
 import { MapView } from "../components/map-view";
@@ -8,59 +9,48 @@ import ReportHazardModal from "../components/ReportHazardModal";
 import LiveHazardsPanel from "../components/LiveHazardsPanel";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-// Views
-const VIEW = {
-  MAP: "map",
-  REPORT: "report",
-  LIVE: "live",
-};
+const VIEW = { MAP: "map", REPORT: "report", LIVE: "live" };
 
-export const Dashboard = () => {
+export const Dashboard = ({ dark, toggleDark }) => {
   const [search, setSearch] = useState("");
   const [hazards, setHazards] = useState([]);
   const [selectedHazard, setSelectedHazard] = useState(null);
   const [currentView, setCurrentView] = useState(VIEW.MAP);
-
-  // 🔥 NEW: animation state
   const [showAnimation, setShowAnimation] = useState(false);
 
-  // Load hazards
+  const navigate = useNavigate();
+  const username = localStorage.getItem("username") || "User";
+
   const loadHazards = async () => {
     try {
       const res = await axios.get("http://localhost:4000/api/v1/posts");
       setHazards(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error("Error loading hazards:", err);
       setHazards([]);
     }
   };
 
-  useEffect(() => {
-    loadHazards();
-  }, []);
+  useEffect(() => { loadHazards(); }, []);
 
-  // When new post is created
   const handlePostCreated = (newPost) => {
     if (newPost) setHazards((prev) => [newPost, ...prev]);
     setCurrentView(VIEW.MAP);
   };
 
   const handleViewChange = (view) => {
-  setShowAnimation(true)
-
-  // 🔥 Force React to render animation first
-  setTimeout(() => {
-    setCurrentView(view)
-
-    // hide animation after delay
+    setShowAnimation(true);
     setTimeout(() => {
-      setShowAnimation(false)
-    }, 1500)
+      setCurrentView(view);
+      setTimeout(() => setShowAnimation(false), 1500);
+    }, 50);
+  };
 
-  }, 50) // small delay to allow render
-}
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    navigate("/login");
+  };
 
-  // Filter hazards
   const filteredHazards = hazards.filter(
     (h) =>
       !search ||
@@ -69,9 +59,8 @@ export const Dashboard = () => {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
 
-      {/* Sidebar */}
       <SideBar
         currentView={currentView}
         onShowMap={() => handleViewChange(VIEW.MAP)}
@@ -79,36 +68,57 @@ export const Dashboard = () => {
         onShowLive={() => handleViewChange(VIEW.LIVE)}
       />
 
-      {/* Main Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
+      <div className="flex-1 flex flex-col min-w-0">
 
-        {/* Top Bar */}
-        <div className="bg-white border-b px-6 py-4 flex-shrink-0">
+        <div
+          className="flex items-center justify-between px-6 py-3 flex-shrink-0 border-b"
+          style={{ background: "var(--topbar)", borderColor: "var(--border)" }}
+        >
           <SearchBar search={search} setSearch={setSearch} />
+
+          <div className="flex items-center gap-3 ml-4">
+
+            <button
+              onClick={toggleDark}
+              className="w-9 h-9 rounded-full flex items-center justify-center border transition hover:opacity-80"
+              style={{ borderColor: "var(--border)", background: "var(--bg2)", color: "var(--text)" }}
+              title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? "☀" : "🌙"}
+            </button>
+
+            <span className="text-sm font-medium" style={{ color: "var(--text2)" }}>
+              @{username}
+            </span>
+
+            <Link
+              to="/login"
+              onClick={handleLogout}
+              className="text-sm px-3 py-1.5 rounded-lg border font-medium transition hover:opacity-80"
+              style={{ borderColor: "var(--border)", color: "var(--text)", background: "var(--bg2)" }}
+            >
+              Logout
+            </Link>
+
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative" style={{ background: "var(--bg2)" }}>
 
-          {/* 🔥 LOTTIE ANIMATION OVERLAY */}
           {showAnimation && (
-           <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
-
+            <div
+              className="absolute inset-0 flex items-center justify-center z-50"
+              style={{ background: "var(--bg)" }}
+            >
               <div className="w-60 h-60">
-                <DotLottieReact
-                  src="/animations/Roadmap.lottie"
-                  loop
-                  autoplay
-                />
+                <DotLottieReact src="/animations/Roadmap.lottie" loop autoplay />
               </div>
-
             </div>
           )}
 
-          {/* MAP VIEW */}
           {currentView === VIEW.MAP && (
             <div className="absolute inset-0 p-4">
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow border">
+              <div className="w-full h-full rounded-2xl overflow-hidden shadow border" style={{ borderColor: "var(--border)" }}>
                 <MapView
                   hazards={filteredHazards}
                   selected={selectedHazard}
@@ -118,9 +128,8 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* REPORT VIEW */}
           {currentView === VIEW.REPORT && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white p-8">
+            <div className="absolute inset-0 flex items-center justify-center p-8" style={{ background: "var(--bg)" }}>
               <ReportHazardModal
                 onClose={() => setCurrentView(VIEW.MAP)}
                 onPostCreated={handlePostCreated}
@@ -128,9 +137,8 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* LIVE VIEW */}
           {currentView === VIEW.LIVE && (
-            <div className="absolute inset-0 bg-white">
+            <div className="absolute inset-0" style={{ background: "var(--bg)" }}>
               <LiveHazardsPanel onClose={() => setCurrentView(VIEW.MAP)} />
             </div>
           )}
@@ -140,4 +148,3 @@ export const Dashboard = () => {
     </div>
   );
 };
-

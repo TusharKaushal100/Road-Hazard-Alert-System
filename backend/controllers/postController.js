@@ -14,7 +14,7 @@ const LABEL_COLORS = {
   animal: "#22c55e",
 };
 
-// ✅ VALID LABELS (VERY IMPORTANT)
+
 const VALID_LABELS = [
   "pothole",
   "flood",
@@ -42,7 +42,6 @@ function formatPost(p) {
   };
 }
 
-// POST /api/v1/posts
 export const createPost = async (req, res) => {
   console.log("Received createPost request with body:", req.body);
 
@@ -54,18 +53,18 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ message: "text is required" });
     }
 
-    // 🔥 Step 1: ML Classification
+    
     const ml = await classifyPost(text);
 
-    // 🔥 Step 2: Validate ML label (CRITICAL FIX)
+    
     let label = ml?.label;
 
     if (!VALID_LABELS.includes(label)) {
       console.warn("Invalid ML label:", label, "→ using fallback");
-      label = "road_damage"; // safe fallback
+      label = "road_damage"; 
     }
 
-    // 🔥 Step 3: Extract Location (NER + fallback + geocode)
+    
     const location = await extractLocation(text);
 
     const postData = {
@@ -83,12 +82,11 @@ export const createPost = async (req, res) => {
       username: username || "anonymous",
     };
 
-    // 🔥 Step 4: Save to DB
+    
     if (mongoose.connection.readyState === 1) {
       const saved = await PostModel.create(postData);
 
-      // optional async (don't block response in production ideally)
-      await sendAlertToAuthority(saved);
+      // await sendAlertToAuthority(saved);
 
       return res.status(201).json({
         message: "Post created",
@@ -109,7 +107,7 @@ export const createPost = async (req, res) => {
   }
 };
 
-// GET /api/v1/posts
+
 export const getPosts = async (req, res) => {
   console.log("Received getPosts request");
 
@@ -122,7 +120,7 @@ export const getPosts = async (req, res) => {
       return res.json(posts.map(p => formatPost(p.toObject())));
     }
 
-    // fallback (in-memory)
+    
     return res.json(getInMemoryPosts().map(formatPost));
 
   } catch (err) {
@@ -133,7 +131,7 @@ export const getPosts = async (req, res) => {
   }
 };
 
-// GET /api/v1/posts/city?city=Guwahati
+
 export const getPostsByCityState = async (req, res) => {
   console.log("Received getPostsByCityState request with query:", req.query);
 
@@ -147,7 +145,7 @@ export const getPostsByCityState = async (req, res) => {
       return res.json(posts.map(p => formatPost(p.toObject())));
     }
 
-    // fallback (in-memory)
+    
     const filtered = getInMemoryPosts().filter(p => p.city === city);
 
     return res.json(filtered.map(formatPost));

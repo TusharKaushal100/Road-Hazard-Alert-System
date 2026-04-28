@@ -10,3 +10,34 @@
 .leaflet-control {
   z-index: 1000;
 }
+
+:root {
+  --bg: #ffffff;
+  --bg2: #f9fafb;
+  --border: #e5e7eb;
+  --text: #111827;
+  --text2: #6b7280;
+  --sidebar: #ffffff;
+  --topbar: #ffffff;
+  --input: #ffffff;
+  --input-border: #d1d5db;
+  --card: #ffffff;
+}
+
+.dark {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --border: #334155;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --sidebar: #1e293b;
+  --topbar: #1e293b;
+  --input: #1e293b;
+  --input-border: #475569;
+  --card: #1e293b;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}

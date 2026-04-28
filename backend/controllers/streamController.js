@@ -1,24 +1,27 @@
-// backend/controllers/streamController.js
-// Server-Sent Events endpoint for live hazard updates.
+import { addSSEClient, removeSSEClient } from "../services/mockIngestionService.js";
 
 export const streamLiveUpdates = (req, res) => {
-  res.setHeader("Content-Type",  "text/event-stream");
+  res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection",    "keep-alive");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.flushHeaders();
 
-  // Send a heartbeat every 15s to keep connection alive
+  res.write(": connected\n\n");
+
   const heartbeat = setInterval(() => {
     res.write(": heartbeat\n\n");
-  }, 15000);
+  }, 20000);
 
-  // Register this client so mockIngestionService can push to it
+  const emit = (data) => res.write(data);
+  addSSEClient(emit);
+
   global.liveUpdateEmitter = (post) => {
     res.write(`data: ${JSON.stringify(post)}\n\n`);
   };
 
   req.on("close", () => {
     clearInterval(heartbeat);
-    global.liveUpdateEmitter = null;
+    removeSSEClient(emit);
   });
 };

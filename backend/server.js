@@ -17,6 +17,11 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
+const DEFAULT_DB_NAME = "road_hazard";
+
+function normalizeMongoUrl(mongoUrl) {
+  return mongoUrl.replace(/(mongodb(?:\+srv)?:\/\/[^/]+)\/+/, "$1/");
+}
 
 app.get("/", (req, res) => res.send("Road Hazard Backend Running"));
 
@@ -29,13 +34,14 @@ const main = async () => {
   try {
     const mongoUrl = process.env.MONGO_URL;
     if (mongoUrl) {
-      await mongoose.connect(mongoUrl, { dbName: "road_hazard" });
-      console.log("MongoDB connected");
+      const dbName = process.env.MONGO_DB_NAME || DEFAULT_DB_NAME;
+      await mongoose.connect(normalizeMongoUrl(mongoUrl), { dbName });
+      console.log(`MongoDB connected to database: ${mongoose.connection.name}`);
     } else {
       console.log("No MONGO_URL — running without database (mock mode)");
     }
   } catch (err) {
-    console.log("MongoDB connection failed — running in mock mode");
+    console.error("MongoDB connection failed - running in mock mode:", err.message);
   }
 
   // Start pulling from mock API every 30 seconds
